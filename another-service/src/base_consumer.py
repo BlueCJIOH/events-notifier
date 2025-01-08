@@ -1,5 +1,7 @@
 import json
 import time
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import pika
 from sqlalchemy.orm import Session
 from db.config import SessionLocal
@@ -57,6 +59,25 @@ def process_task(task_id: int, session: Session) -> None:
         session.rollback()
         print(f"Failed to process task {task_id}: {e}")
 
+
+def handle_message(body):
+    """
+    Handle a single message from RabbitMQ.
+    """
+    session = SessionLocal()
+    try:
+        message = json.loads(body)
+        task_id = message.get("task_id")
+        if not task_id:
+            raise ValueError("Task ID is missing in the message.")
+
+        process_task(task_id, session)
+    except Exception as e:
+        print(f"Failed to process message: {e}")
+    finally:
+        session.close()
+
+
 def start_worker():
     """
     Start the RabbitMQ worker to consume messages and process tasks.
@@ -67,28 +88,15 @@ def start_worker():
 
     channel.queue_declare(queue="tasks_queue", durable=True)
 
+    executor = ThreadPoolExecutor(max_workers=5)  # Adjust max_workers as needed
+
     def callback(ch, method, properties, body):
         """
         Callback for processing RabbitMQ messages.
-        :param ch: RabbitMQ channel object.
-        :param method: RabbitMQ delivery method.
-        :param properties: RabbitMQ properties.
-        :param body: Message body.
         """
-        session = SessionLocal()
-        try:
-            message = json.loads(body)
-            task_id = message.get("task_id")
-            if not task_id:
-                raise ValueError("Task ID is missing in the message.")
-
-            process_task(task_id, session)
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-        except Exception as e:
-            print(f"Failed to process message: {e}")
-            ch.basic_nack(delivery_tag=method.delivery_tag)
-        finally:
-            session.close()
+        # Submit the message to the thread pool for processing
+        executor.submit(handle_message, body)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_consume(queue="tasks_queue", on_message_callback=callback)
     print("Worker started. Waiting for messages...")

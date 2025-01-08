@@ -29,13 +29,8 @@ The Events Notifier Service is a Python-based application designed to emit event
    cd another-service
    docker-compose up --build -d
    ```
-
-3. Connect to websocket (make sure you have wscat installed)
-   ```bash
-   wscat -c ws://localhost:8000/ws/tasks/
-   ```
-
-4. Request to urls:
+   
+3. Request to urls:
    ```bash
    curl -X POST http://localhost:8000/api/auth/sign-in/ \
      -H "Content-Type: application/json" \
@@ -69,6 +64,12 @@ The Events Notifier Service is a Python-based application designed to emit event
     "user": 1
    }
    ```
+
+4. Connect to websocket (make sure you have wscat installed)
+   ```bash
+   wscat -c ws://localhost:8000/ws/tasks/
+   ```
+
 
 ## Usage
 
