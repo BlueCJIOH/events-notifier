@@ -15,7 +15,7 @@ The Events Notifier Service is a Python-based application designed to emit event
 1. Clone the repository:
    ```bash
    git clone https://github.com/BlueCJIOH/events-notifier.git
-   cd events-notifier/
+   cd events-notifier
    ```
 
 2. Build and run the services using Docker Compose:
@@ -27,7 +27,7 @@ The Events Notifier Service is a Python-based application designed to emit event
    
    ```bash
    cd another-service
-   docker-compose up --build
+   docker-compose up --build -d
    ```
 
 3. Connect to websocket (make sure you have wscat installed)
