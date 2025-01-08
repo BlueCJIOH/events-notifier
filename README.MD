@@ -15,12 +15,52 @@ The Events Notifier Service is a Python-based application designed to emit event
 1. Clone the repository:
    ```bash
    git clone https://github.com/BlueCJIOH/events-notifier.git
-   cd events-notifier
+   cd events-notifier/notifier
    ```
 
 2. Build and run the services using Docker Compose:
    ```bash
    docker-compose up --build
+   ```
+
+3. Connect to websocket (make sure you have wscat installed)
+   ```bash
+   wscat -c ws://localhost:8000/ws/tasks/
+   ```
+
+4. Request to urls:
+   ```bash
+   curl -X POST http://localhost:8000/api/auth/sign-in/ \
+     -H "Content-Type: application/json" \
+     -d '{"email": "your_username", "password": "your_password"}'
+   ```
+   successful response:
+   ```json
+   {
+    "access_token": "your_jwt_token",
+    "refresh_token": "your_refresh_token"
+   }
+   ```
+   ```bash
+   curl -X POST http://localhost:8000/tasks/ \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer your_jwt_token" \
+     -d '{
+           "title": "TEXT",
+           "description": "TEST"
+         }'
+   ```
+   successful response:
+   ```json
+   {
+    "id": 110,
+    "title": "TEXT",
+    "description": "TEST",
+    "status": "pending",
+    "created_at": "2025-01-08T10:06:25.406216Z",
+    "updated_at": "2025-01-08T10:06:25.406239Z",
+    "user": 1
+   }
    ```
 
 ## Usage

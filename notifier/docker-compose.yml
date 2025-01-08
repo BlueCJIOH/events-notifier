@@ -4,6 +4,8 @@ services:
     env_file: .env
     depends_on:
       - db
+      - rabbitmq
+      - redis
     ports:
       - "8000:8000"
     volumes:
@@ -11,6 +13,20 @@ services:
     restart: always
     networks:
       - notifier-network
+    command: uvicorn notifier.asgi:application --host 0.0.0.0 --port 8000
+
+  rabbitmq-consumer:
+    build: .
+    command: python manage.py rabbitmq_consumer
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - db
+    volumes:
+      - .:/app
+    networks:
+      - notifier-network
+    restart: always
 
   db:
     image: postgres:16.4
@@ -18,10 +34,62 @@ services:
     ports:
         - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/
+      - ./postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
       - notifier-network
+
+  rabbitmq:
+      image: rabbitmq:3.11-management
+      container_name: rabbitmq
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+      env_file: .env
+      networks:
+        - notifier-network
+      restart: always
+      healthcheck:
+        test: ["CMD", "rabbitmq-diagnostics", "ping"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+  redis:
+    image: redis:7.0.9
+    ports:
+      - "6379:6379"
+    networks:
+      - notifier-network
+    restart: always
+
+  worker:
+    build: .
+    command: celery -A notifier worker -l info
+    env_file: .env
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - .:/app
+    networks:
+      - notifier-network
+    restart: always
+
+  # can be comment
+  another-service:
+    build:
+      context: ./other-service
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./other-service/.env
+    depends_on:
+      - web
+      - db
+      - rabbitmq
+    networks:
+      - notifier-network
+    restart: always
 
 volumes:
   postgres_data:

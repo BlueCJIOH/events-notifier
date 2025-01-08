@@ -32,6 +32,7 @@ LOCAL_APPS = [
     "notifier",
     "authentication",
     "users",
+    'tasks',
 ]
 
 THIRD_PARTY_APPS = [
@@ -40,7 +41,6 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "channels",
-    "django_redis",
 ]
 
 DEFAULT_APPS = [
@@ -137,6 +137,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATIC_ROOT = BASE_DIR / 'static'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -159,3 +161,14 @@ SPECTACULAR_SETTINGS = {
 ASGI_APPLICATION = "notifier.asgi.application"
 
 AUTH_USER_MODEL = 'users.User'
+
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
