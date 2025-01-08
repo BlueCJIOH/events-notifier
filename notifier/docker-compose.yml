@@ -34,7 +34,7 @@ services:
     ports:
         - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: always
     networks:
       - notifier-network
@@ -76,24 +76,11 @@ services:
       - notifier-network
     restart: always
 
-  # can be comment
-  another-service:
-    build:
-      context: ./other-service
-      dockerfile: ./Dockerfile
-    env_file:
-      - ./other-service/.env
-    depends_on:
-      - web
-      - db
-      - rabbitmq
-    networks:
-      - notifier-network
-    restart: always
-
 volumes:
   postgres_data:
+    name: postgres_data
 
 networks:
   notifier-network:
     driver: bridge
+    name: notifier-network

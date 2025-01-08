@@ -1,0 +1,13 @@
+services:
+  another-service:
+    build: .
+    env_file: .env
+    volumes:
+      - .:/app
+    networks:
+      - notifier-network
+    restart: always
+
+networks:
+  notifier-network:
+    external: true
