@@ -84,7 +84,7 @@ The Events Notifier Service is a Python-based application designed to emit event
    ```bash
    pip install pre-commit
    pre-commit install
-   
+
    pre-commit run --all-files # if you wanna test manually
    ```
 
