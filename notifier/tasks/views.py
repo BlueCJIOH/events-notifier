@@ -10,6 +10,7 @@ class TaskViewSet(ModelViewSet):
     """
     ViewSet for managing tasks.
     """
+
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]

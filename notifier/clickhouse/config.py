@@ -2,22 +2,15 @@ import os
 import datetime
 import clickhouse_connect
 
+
 class ClickHouseClient:
-    def __init__(
-        self,
-        host: str = "clickhouse",
-        port: int = 8123,
-        username: str = "default",
-        password: str = "",
-        database: str = "default",
-        table: str = "logs",
-    ):
-        self.host = os.getenv("CLICKHOUSE_HOST", host)
-        self.port = int(os.getenv("CLICKHOUSE_PORT", port))
-        self.username = os.getenv("CLICKHOUSE_USER", username)
-        self.password = os.getenv("CLICKHOUSE_PASSWORD", password)
-        self.database = os.getenv("CLICKHOUSE_DB", database)
-        self.table = table
+    def __init__(self):
+        self.host = os.environ.get("CLICKHOUSE_HOST", "db")
+        self.port = int(os.environ.get("CLICKHOUSE_PORT", 8123))
+        self.username = os.environ.get("CLICKHOUSE_USER", "default")
+        self.password = os.environ.get("CLICKHOUSE_PASSWORD", "default")
+        self.database = os.environ.get("CLICKHOUSE_DB", "default")
+        self.table = "logs"
 
         self.client = clickhouse_connect.get_client(
             host=self.host,
@@ -26,7 +19,6 @@ class ClickHouseClient:
             password=self.password,
             database=self.database,
         )
-
 
         self._ensure_table()
 

@@ -20,11 +20,10 @@ def get_user_from_token(token: str):
 
 
 class JWTAuthMiddleware(BaseMiddleware):
-
     async def __call__(self, scope, receive, send):
         headers = dict(scope["headers"])
 
-        authorization_header = headers.get(b'authorization', None)
+        authorization_header = headers.get(b"authorization", None)
         token = None
         if authorization_header is not None:
             auth_str = authorization_header.decode("utf-8")

@@ -24,12 +24,12 @@ The Events Notifier Service is a Python-based application designed to emit event
    docker-compose up --build -d
    docker-compose exec web python manage.py migrate && python manage.py loaddata fixtures/users.json
    ```
-   
+
    ```bash
    cd another-service
    docker-compose up --build -d
    ```
-   
+
 3. Request to urls:
    ```bash
    curl -X POST http://localhost:8000/api/auth/sign-in/ \
@@ -74,16 +74,23 @@ The Events Notifier Service is a Python-based application designed to emit event
    ```bash
    docker exec -it clickhouse clickhouse-client
    ```
-   
+
    ```sql
    SELECT * FROM logs;
    -- to see the table logs
    ```
 
+## Commit
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   
+   pre-commit run --all-files # if you wanna test manually
+   ```
 
 ## Usage
 
-To emit an event, send a POST request to the appropriate endpoint with the event data. The service will handle the rest, ensuring the event is published to RabbitMQ.
+To emit an event, send a POST request to the appropriate endpoint with the event data. The service will handle the rest, ensuring the event is published to RabbitMQ and logged by ClickHouse.
 
 ## Documentation
 

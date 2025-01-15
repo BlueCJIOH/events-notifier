@@ -5,6 +5,7 @@ class AppInitializer:
     """
     Centralized application initializer.
     """
+
     def __init__(self):
         self.clickhouse_logger = None
 

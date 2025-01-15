@@ -7,29 +7,23 @@ from sqlalchemy.orm import Session
 from db.config import SessionLocal
 from db.models import Task, TaskStatus
 
+
 def publish_status_update(task_id: int, new_status, user_id) -> None:
     try:
-        connection_params = pika.ConnectionParameters(host='rabbitmq', port=5672)
+        connection_params = pika.ConnectionParameters(host="rabbitmq", port=5672)
         connection = pika.BlockingConnection(connection_params)
         channel = connection.channel()
-        channel.queue_declare(queue='task_status_updates', durable=True)
-        message = {
-            'task_id': task_id,
-            'status': new_status.value,
-            'user_id': user_id
-        }
+        channel.queue_declare(queue="task_status_updates", durable=True)
+        message = {"task_id": task_id, "status": new_status.value, "user_id": user_id}
         body = json.dumps(message)
 
-        channel.basic_publish(
-            exchange='',
-            routing_key='task_status_updates',
-            body=body
-        )
+        channel.basic_publish(exchange="", routing_key="task_status_updates", body=body)
 
         connection.close()
         print(f"Published status update for task {task_id}, status={new_status}")
     except Exception as e:
         print(f"Failed to publish status update: {e}")
+
 
 def process_task(task_id: int, session: Session) -> None:
     """
@@ -101,6 +95,7 @@ def start_worker():
     channel.basic_consume(queue="tasks_queue", on_message_callback=callback)
     print("Worker started. Waiting for messages...")
     channel.start_consuming()
+
 
 if __name__ == "__main__":
     try:

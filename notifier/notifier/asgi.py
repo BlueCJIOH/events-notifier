@@ -16,11 +16,11 @@ app = get_asgi_application()
 from ws.middleware import JWTAuthMiddleware
 from ws.routing import websocket_urlpatterns
 
-application = ProtocolTypeRouter({
-    "http": app,
-    "websocket": AllowedHostsOriginValidator(
-        JWTAuthMiddleware(
-            URLRouter(websocket_urlpatterns)
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": app,
+        "websocket": AllowedHostsOriginValidator(
+            JWTAuthMiddleware(URLRouter(websocket_urlpatterns))
+        ),
+    }
+)

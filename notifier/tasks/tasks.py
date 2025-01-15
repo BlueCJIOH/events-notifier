@@ -1,8 +1,8 @@
-import json
-from celery import shared_task
-from django.db import transaction
-
-from tasks.models import Task
+# import json
+# from celery import shared_task
+# from django.db import transaction
+#
+# from tasks.models import Task
 
 
 # @shared_task
