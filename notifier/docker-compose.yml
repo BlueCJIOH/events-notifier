@@ -3,9 +3,14 @@ services:
     build: .
     env_file: .env
     depends_on:
-      - db
-      - rabbitmq
-      - redis
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      clickhouse:
+        condition: service_started
     ports:
       - "8000:8000"
     volumes:
@@ -20,8 +25,14 @@ services:
     command: python manage.py rabbitmq_consumer
     env_file: .env
     depends_on:
-      - rabbitmq
-      - db
+      web:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+      clickhouse:
+        condition: service_started
     volumes:
       - .:/app
     networks:
@@ -76,9 +87,24 @@ services:
       - notifier-network
     restart: always
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    env_file: .env
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    networks:
+      - notifier-network
+    restart: always
+
 volumes:
   postgres_data:
     name: postgres_data
+  clickhouse_data:
+    name: clickhouse_data
 
 networks:
   notifier-network:

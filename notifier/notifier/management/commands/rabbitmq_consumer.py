@@ -5,9 +5,15 @@ from django.core.management.base import BaseCommand
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+from clickhouse.config import ClickHouseClient
+
 
 class Command(BaseCommand):
     help = "Consumes messages from 'task_status_updates' queue and notifies websockets"
+
+    def __init__(self):
+        super().__init__()
+        self.clickhouse_logger = ClickHouseClient() # clickhouse logger setup
 
     def handle(self, *args, **options):
         connection_params = pika.ConnectionParameters(host='rabbitmq', port=5672)
@@ -38,13 +44,13 @@ class Command(BaseCommand):
                     }
                 )
 
-                print(f"Processed message successfully for task_id={task_id}, status={new_status}")
+                self.clickhouse_logger.info(f"Processed message for task_id={task_id}, status={new_status}")
                 ch.basic_ack(delivery_tag=method.delivery_tag)
 
             except Exception as e:
-                print(f"Failed to process message: {e}")
+                self.clickhouse_logger.error(f"Failed to process message: {e}")
                 ch.basic_nack(delivery_tag=method.delivery_tag)
 
         channel.basic_consume(queue='task_status_updates', on_message_callback=callback)
-        print("Started consumer for 'task_status_updates' queue...")
+        self.clickhouse_logger.info("Started consumer for 'task_status_updates' queue...")
         channel.start_consuming()

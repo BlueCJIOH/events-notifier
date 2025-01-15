@@ -70,6 +70,16 @@ The Events Notifier Service is a Python-based application designed to emit event
    wscat -c ws://localhost:8000/ws/tasks/
    ```
 
+5. You have logs from notifier service in ClickHouse
+   ```bash
+   docker exec -it clickhouse clickhouse-client
+   ```
+   
+   ```sql
+   SELECT * FROM logs;
+   -- to see the table logs
+   ```
+
 
 ## Usage
 
