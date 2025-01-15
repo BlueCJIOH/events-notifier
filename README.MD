@@ -86,6 +86,7 @@ The Events Notifier Service is a Python-based application designed to emit event
    pre-commit install
 
    pre-commit run --all-files # if you wanna test manually
+   git commit -m "Your message" --no-veriyfy # without pre-commit check
    ```
 
 ## Usage
