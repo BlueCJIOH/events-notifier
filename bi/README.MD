@@ -1,4 +1,4 @@
-# BI to monitor your logges
+# BI to monitor your logs
 We decided to use metabase to monitor the logs
 
 ## Build metabase BI using the following command:
