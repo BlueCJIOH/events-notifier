@@ -33,6 +33,8 @@ LOCAL_APPS = [
     "authentication",
     "users",
     "tasks",
+    "mailersender",
+    "clickhouse",
 ]
 
 THIRD_PARTY_APPS = [
@@ -162,7 +164,10 @@ ASGI_APPLICATION = "notifier.asgi.application"
 
 AUTH_USER_MODEL = "users.User"
 
+# celery config
 CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_TIMEZONE = "Europe/Moscow"
 
 CHANNEL_LAYERS = {
     "default": {

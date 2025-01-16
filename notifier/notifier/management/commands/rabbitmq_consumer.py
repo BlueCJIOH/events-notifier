@@ -1,3 +1,4 @@
+import datetime
 import json
 import pika
 from django.core.management.base import BaseCommand
@@ -5,15 +6,13 @@ from django.core.management.base import BaseCommand
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from clickhouse.config import ClickHouseClient
+from clickhouse.tasks import log_task_status
+from mailersender.tasks import send_email_task
+from users.models import User
 
 
 class Command(BaseCommand):
     help = "Consumes messages from 'task_status_updates' queue and notifies websockets"
-
-    def __init__(self):
-        super().__init__()
-        self.clickhouse_logger = ClickHouseClient()  # clickhouse logger setup
 
     def handle(self, *args, **options):
         connection_params = pika.ConnectionParameters(host="rabbitmq", port=5672)
@@ -34,6 +33,8 @@ class Command(BaseCommand):
                         "Missing task_id or status, user_id in the message."
                     )
 
+                user = User.objects.get(id=user_id)
+
                 group_name = f"room_{user_id}"
 
                 channel_layer = get_channel_layer()
@@ -46,17 +47,30 @@ class Command(BaseCommand):
                     },
                 )
 
-                self.clickhouse_logger.info(
-                    f"Processed message for task_id={task_id}, status={new_status}"
+                log_task_status.delay("info", f"Processed message for task_id={task_id}, status={new_status}") # log tasks
+
+                # send message to email
+                send_email_task.delay(
+                    recipient=user.email,
+                    template_id="z3m5jgr19yx4dpyo",
+                    variables={
+                        "name": user.email,
+                        "date": str(datetime.datetime.now()),
+                        "task": str(task_id),
+                        "status": new_status,
+                    }
                 )
+
                 ch.basic_ack(delivery_tag=method.delivery_tag)
 
+
             except Exception as e:
-                self.clickhouse_logger.error(f"Failed to process message: {e}")
+                log_task_status.delay("error", f"Failed to process message: {e}")
                 ch.basic_nack(delivery_tag=method.delivery_tag)
 
         channel.basic_consume(queue="task_status_updates", on_message_callback=callback)
-        self.clickhouse_logger.info(
+        log_task_status.delay(
+            "info",
             "Started consumer for 'task_status_updates' queue..."
         )
         channel.start_consuming()
