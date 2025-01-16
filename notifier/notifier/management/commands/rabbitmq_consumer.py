@@ -8,6 +8,7 @@ from channels.layers import get_channel_layer
 
 from clickhouse.tasks import log_task_status
 from mailersender.tasks import send_email_task
+from notifier.logger import LOGGER
 from users.models import User
 
 
@@ -15,7 +16,12 @@ class Command(BaseCommand):
     help = "Consumes messages from 'task_status_updates' queue and notifies websockets"
 
     def handle(self, *args, **options):
-        connection_params = pika.ConnectionParameters(host="rabbitmq", port=5672)
+        connection_params = pika.ConnectionParameters(
+            host="rabbitmq",
+            port=5672,
+            heartbeat=600,
+            blocked_connection_timeout=300
+        )
         connection = pika.BlockingConnection(connection_params)
         channel = connection.channel()
 
@@ -71,6 +77,7 @@ class Command(BaseCommand):
                 ch.basic_nack(delivery_tag=method.delivery_tag)
 
         channel.basic_consume(queue="task_status_updates", on_message_callback=callback)
+        LOGGER.info("Started consumer for 'task_status_updates' queue...")
         log_task_status.delay(
             "info", "Started consumer for 'task_status_updates' queue..."
         )

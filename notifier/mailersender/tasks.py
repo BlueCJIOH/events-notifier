@@ -1,6 +1,7 @@
 from celery import shared_task
 
 from mailersender.services import mailersend_client
+from notifier.logger import LOGGER
 
 
 @shared_task
@@ -11,4 +12,4 @@ def send_email_task(recipient: str, template_id: str, variables: dict):
     try:
         mailersend_client.send_email(recipient, template_id, variables)
     except Exception as e:
-        raise RuntimeError(f"Failed to send email: {e}")
+         LOGGER.exception(f"Failed to send email: {e}")

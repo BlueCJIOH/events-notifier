@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tasks.models import Task
 from tasks.serializers import TaskSerializer
-from tasks.producers import publish_task_message
+from tasks.tasks import publish_task_message
 
 
 class TaskViewSet(ModelViewSet):
@@ -20,7 +20,7 @@ class TaskViewSet(ModelViewSet):
         Publish task message to RabbitMQ after task creation.
         """
         task = serializer.save(user=self.request.user)
-        publish_task_message(task)
+        publish_task_message.delay(task.id, task.user_id, task.status)
 
     def get_queryset(self):
         """

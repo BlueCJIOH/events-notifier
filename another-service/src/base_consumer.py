@@ -6,6 +6,7 @@ import pika
 from sqlalchemy.orm import Session
 from db.config import SessionLocal
 from db.models import Task, TaskStatus
+from src.logger import LOGGER
 
 
 def publish_status_update(task_id: int, new_status, user_id) -> None:
@@ -20,9 +21,9 @@ def publish_status_update(task_id: int, new_status, user_id) -> None:
         channel.basic_publish(exchange="", routing_key="task_status_updates", body=body)
 
         connection.close()
-        print(f"Published status update for task {task_id}, status={new_status}")
+        LOGGER.info(f"Published status update for task {task_id}, status={new_status}")
     except Exception as e:
-        print(f"Failed to publish status update: {e}")
+        LOGGER.exception(f"Failed to publish status update: {e}")
 
 
 def process_task(task_id: int, session: Session) -> None:
@@ -33,25 +34,25 @@ def process_task(task_id: int, session: Session) -> None:
     """
     task = session.query(Task).filter(Task.id == task_id).first()
     if not task:
-        print(f"Task with ID {task_id} does not exist.")
+        LOGGER.warning(f"Task with ID {task_id} does not exist.")
         return
 
     try:
         task.status = TaskStatus.IN_PROGRESS
         session.commit()
-        print(f"Task {task_id} updated to IN_PROGRESS.")
+        LOGGER.info(f"Task {task_id} updated to IN_PROGRESS.")
         publish_status_update(task.id, task.status, task.user_id)
 
         time.sleep(5)
 
         task.status = TaskStatus.DONE
         session.commit()
-        print(f"Task {task_id} updated to DONE.")
+        LOGGER.info(f"Task {task_id} updated to DONE.")
 
         publish_status_update(task.id, task.status, task.user_id)
     except Exception as e:
         session.rollback()
-        print(f"Failed to process task {task_id}: {e}")
+        LOGGER.exception(f"Failed to process task {task_id}: {e}")
 
 
 def handle_message(body):
@@ -67,7 +68,7 @@ def handle_message(body):
 
         process_task(task_id, session)
     except Exception as e:
-        print(f"Failed to process message: {e}")
+        LOGGER.exception(f"Failed to process message: {e}")
     finally:
         session.close()
 
@@ -93,7 +94,7 @@ def start_worker():
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_consume(queue="tasks_queue", on_message_callback=callback)
-    print("Worker started. Waiting for messages...")
+    LOGGER.info("Worker started. Waiting for messages...")
     channel.start_consuming()
 
 
