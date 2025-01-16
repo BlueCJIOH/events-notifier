@@ -47,7 +47,10 @@ class Command(BaseCommand):
                     },
                 )
 
-                log_task_status.delay("info", f"Processed message for task_id={task_id}, status={new_status}") # log tasks
+                log_task_status.delay(
+                    "info",
+                    f"Processed message for task_id={task_id}, status={new_status}",
+                )  # log tasks
 
                 # send message to email
                 send_email_task.delay(
@@ -58,11 +61,10 @@ class Command(BaseCommand):
                         "date": str(datetime.datetime.now()),
                         "task": str(task_id),
                         "status": new_status,
-                    }
+                    },
                 )
 
                 ch.basic_ack(delivery_tag=method.delivery_tag)
-
 
             except Exception as e:
                 log_task_status.delay("error", f"Failed to process message: {e}")
@@ -70,7 +72,6 @@ class Command(BaseCommand):
 
         channel.basic_consume(queue="task_status_updates", on_message_callback=callback)
         log_task_status.delay(
-            "info",
-            "Started consumer for 'task_status_updates' queue..."
+            "info", "Started consumer for 'task_status_updates' queue..."
         )
         channel.start_consuming()

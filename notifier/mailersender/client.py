@@ -4,7 +4,9 @@ from mailersender.metaclasses import MailerSendMeta
 
 
 class MailerSendClient(metaclass=MailerSendMeta):
-    def __init__(self, email_from: str = None, email_name: str = None, api_key: str = None):
+    def __init__(
+        self, email_from: str = None, email_name: str = None, api_key: str = None
+    ):
         self.api_key = api_key
         self.email_from = email_from
         self.email_name = email_name
@@ -14,16 +16,16 @@ class MailerSendClient(metaclass=MailerSendMeta):
         try:
             self.client.send(
                 {
-                    'from': {'email': self.email_from, 'name': self.email_name},
-                    'to': [{'email': recipient}],
+                    "from": {"email": self.email_from, "name": self.email_name},
+                    "to": [{"email": recipient}],
                     "subject": "Hello from Events Notifier",
-                    'template_id': template_id,
-                    'personalization': [
+                    "template_id": template_id,
+                    "personalization": [
                         {
-                            'email': recipient,
-                            'data': variables,
+                            "email": recipient,
+                            "data": variables,
                         }
-                    ]
+                    ],
                 }
             )
         except Exception as e:
