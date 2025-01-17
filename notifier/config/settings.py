@@ -29,12 +29,15 @@ ALLOWED_HOSTS = ["*"]
 
 
 LOCAL_APPS = [
-    "notifier",
+    "config",
     "authentication",
     "users",
     "tasks",
     "mailersender",
     "clickhouse",
+    "workspaces",
+    "roles",
+    "permissions",
 ]
 
 THIRD_PARTY_APPS = [
@@ -67,7 +70,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "notifier.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -85,7 +88,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "notifier.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -160,7 +163,7 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
-ASGI_APPLICATION = "notifier.asgi.application"
+ASGI_APPLICATION = "config.asgi.application"
 
 AUTH_USER_MODEL = "users.User"
 

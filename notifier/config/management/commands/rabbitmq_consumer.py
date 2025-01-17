@@ -8,7 +8,7 @@ from channels.layers import get_channel_layer
 
 from clickhouse.tasks import log_task_status
 from mailersender.tasks import send_email_task
-from notifier.logger import LOGGER
+from config.logger import LOGGER
 from users.models import User
 
 

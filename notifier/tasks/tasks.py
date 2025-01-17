@@ -2,7 +2,7 @@ import pika
 import json
 from celery import shared_task
 
-from notifier.logger import LOGGER
+from config.logger import LOGGER
 
 
 @shared_task

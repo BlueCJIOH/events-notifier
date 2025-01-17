@@ -39,3 +39,8 @@ class BaseEnum(Enum):
     @lru_cache(None)
     def exclude_values(cls, *items):
         return tuple(set((map(attrgetter("value"), cls))) - set(items))
+
+NULLABLE = {
+    'null': True,
+    'blank': True,
+}

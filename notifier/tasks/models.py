@@ -20,3 +20,6 @@ class Task(models.Model):
 
     def __str__(self) -> str:
         return f"Task #{self.pk} - {self.title}"
+
+    class Meta:
+        db_table = "tasks"

@@ -171,4 +171,3 @@ cython_debug/
 .pypirc
 
 .idea
-/notifier/postgres_data/

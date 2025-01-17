@@ -20,7 +20,7 @@ The Events Notifier Service is a Python-based application designed to emit event
 
 2. Build and run the services using Docker Compose:
    ```bash
-   cd notifier
+   cd config
    docker-compose up --build -d
    docker-compose exec web python manage.py migrate && python manage.py loaddata fixtures/users.json
    ```

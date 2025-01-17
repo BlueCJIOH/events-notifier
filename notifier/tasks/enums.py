@@ -1,4 +1,4 @@
-from notifier.base import BaseEnum
+from config.base import BaseEnum
 
 
 class TaskStatus(BaseEnum):
