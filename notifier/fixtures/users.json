@@ -8,6 +8,23 @@
       "is_superuser": true,
       "first_name": "",
       "last_name": "",
+      "email": "bluecjioh@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-01-03T08:25:43.448Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$870000$oSFyh4x8UztUg1XCP8zs7g$R//IE+aUfsnmrpF1nnpTp86FsEuWKeAgMWU2RuEDMnI=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
       "email": "admin@gmail.com",
       "is_staff": true,
       "is_active": true,

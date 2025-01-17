@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 
+from config.base import NULLABLE
 from tasks.enums import TaskStatus
+from workspaces.models import Workspace
 
 
 class Task(models.Model):
@@ -9,6 +11,11 @@ class Task(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks"
     )
+
+    workspace = models.ForeignKey(
+        Workspace, on_delete=models.CASCADE, related_name="workspace_tasks", **NULLABLE
+    )
+
     description = models.TextField(blank=True)
 
     status = models.CharField(

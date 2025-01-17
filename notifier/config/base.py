@@ -1,6 +1,7 @@
 from enum import Enum, unique
 from functools import lru_cache
 from operator import attrgetter
+from functools import wraps
 
 
 @unique
@@ -40,7 +41,20 @@ class BaseEnum(Enum):
     def exclude_values(cls, *items):
         return tuple(set((map(attrgetter("value"), cls))) - set(items))
 
+
 NULLABLE = {
-    'null': True,
-    'blank': True,
+    "null": True,
+    "blank": True,
 }
+
+
+def require_permission(permission_name):
+    def decorator(view_method):
+        @wraps(view_method)
+        def _wrapped_view(*args, **kwargs):
+            return view_method(*args, **kwargs)
+
+        setattr(_wrapped_view, "required_permission", permission_name)
+        return _wrapped_view
+
+    return decorator

@@ -21,13 +21,14 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
-        "api/docs/",
+        "docs/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("", include("authentication.urls"), name="auth"),
     path("", include("tasks.urls"), name="tasks"),
+    path("", include("workspaces.urls"), name="workspaces"),
 ]

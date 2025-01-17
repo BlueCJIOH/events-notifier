@@ -1,0 +1,1 @@
+[{"model": "roles.role", "pk": 1, "fields": {"name": "Owner"}}, {"model": "roles.role", "pk": 2, "fields": {"name": "Editor"}}, {"model": "roles.role", "pk": 3, "fields": {"name": "Viewer"}}, {"model": "roles.rolepermission", "pk": 1, "fields": {"role": 1, "permission": 1}}, {"model": "roles.rolepermission", "pk": 2, "fields": {"role": 1, "permission": 2}}]
